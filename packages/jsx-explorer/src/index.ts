@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor';
 import { watchEffect } from 'vue';
 import { transform } from '@babel/standalone';
-import babelPluginJsx from '@vue/babel-plugin-jsx';
+import babelPluginJsx from '@v-c/babel-plugin-jsx';
 // @ts-expect-error missing types
 import typescript from '@babel/plugin-syntax-typescript';
 import {

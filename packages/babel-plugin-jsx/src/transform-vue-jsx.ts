@@ -482,7 +482,7 @@ const transformJSXElement = (
       VNodeChild = enableObjectSlots
         ? t.conditionalExpression(
             t.callExpression(
-              state.get('@vue/babel-plugin-jsx/runtimeIsSlot')(),
+              state.get('@v-c/babel-plugin-jsx/runtimeIsSlot')(),
               [child]
             ),
             child,
@@ -518,7 +518,7 @@ const transformJSXElement = (
         );
         const assignment = t.assignmentExpression('=', slotId, child);
         const condition = t.callExpression(
-          state.get('@vue/babel-plugin-jsx/runtimeIsSlot')(),
+          state.get('@v-c/babel-plugin-jsx/runtimeIsSlot')(),
           [assignment]
         );
         VNodeChild = t.conditionalExpression(condition, slotId, alternate);

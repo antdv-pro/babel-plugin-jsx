@@ -1,5 +1,5 @@
 {
-  "name": "@vue/babel-helper-vue-transform-on",
+  "name": "@v-c/babel-helper-vue-transform-on",
   "version": "1.4.0",
   "type": "commonjs",
   "description": "to help transform on",

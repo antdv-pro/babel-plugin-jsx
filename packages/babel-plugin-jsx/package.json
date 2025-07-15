@@ -1,5 +1,5 @@
 {
-  "name": "@vue/babel-plugin-jsx",
+  "name": "@v-c/babel-plugin-jsx",
   "version": "1.4.0",
   "description": "Babel plugin for Vue 3 JSX",
   "author": "Amour1688 <lcz_1996@foxmail.com>",
@@ -37,8 +37,8 @@
     "@babel/template": "^7.27.0",
     "@babel/traverse": "^7.27.0",
     "@babel/types": "^7.27.0",
-    "@vue/babel-helper-vue-transform-on": "workspace:*",
-    "@vue/babel-plugin-resolve-type": "workspace:*",
+    "@v-c/babel-helper-vue-transform-on": "workspace:*",
+    "@v-c/babel-plugin-resolve-type": "workspace:*",
     "@vue/shared": "^3.5.13"
   },
   "devDependencies": {

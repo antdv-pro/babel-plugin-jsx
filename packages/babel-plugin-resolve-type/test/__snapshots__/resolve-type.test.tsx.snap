@@ -83,6 +83,42 @@ defineComponent((props, {
 });"
 `;
 
+exports[`resolve type > runtime emits > defineComponent function emit 1`] = `
+"import { type SetupContext, defineComponent } from 'vue';
+defineComponent<{}, {
+  change(val: string): void;
+  click(): void;
+}>((props, {
+  emit
+}) => {
+  emit('change');
+  return () => {};
+}, {
+  emits: ["change", "click"]
+});"
+`;
+
+exports[`resolve type > runtime emits > defineComponent object emit 1`] = `
+"import { type SetupContext, defineComponent } from 'vue';
+defineComponent<{}>({
+  emits: ["change", "click"],
+  setup(props, {
+    emit
+  }: SetupContext<{
+    change(val: string): void;
+    click(): void;
+  }>) {}
+});
+defineComponent<{}, {
+  change(val: string): void;
+  click(): void;
+}>({
+  setup(props, {
+    emit
+  }) {}
+});"
+`;
+
 exports[`resolve type > runtime props > basic 1`] = `
 "import { defineComponent, h } from 'vue';
 interface Props {
@@ -109,6 +145,240 @@ defineComponent((props: Props & Props2) => {
       required: true
     }
   }
+});"
+`;
+
+exports[`resolve type > runtime props > export default defineComponent function 1`] = `
+"import { defineComponent, h } from 'vue';
+interface Props {
+  msg: string;
+  optional?: boolean;
+}
+interface Props2 {
+  set: Set<string>;
+}
+export default defineComponent<Props & Props2>(props => {
+  return () => h('div', props.msg);
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: true
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    },
+    set: {
+      type: Set,
+      required: true
+    }
+  }
+});"
+`;
+
+exports[`resolve type > runtime props > export default defineComponent object 1`] = `
+"import { defineComponent, h } from 'vue';
+interface Props {
+  msg: string;
+  optional?: boolean;
+}
+interface Props2 {
+  set: Set<string>;
+}
+export default defineComponent<Props & Props2>({
+  props: {
+    msg: {
+      type: String,
+      required: true
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    },
+    set: {
+      type: Set,
+      required: true
+    }
+  },
+  setup(props) {}
+});"
+`;
+
+exports[`resolve type > runtime props > support setup object 1`] = `
+"import { defineComponent, h } from 'vue';
+interface Props {
+  msg: string;
+  optional?: boolean;
+}
+interface Props2 {
+  set: Set<string>;
+}
+defineComponent<Props & Props2>({
+  props: {
+    msg: {
+      type: String,
+      required: true
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    },
+    set: {
+      type: Set,
+      required: true
+    }
+  },
+  setup(props) {
+    // 这种情况下的默认值设置，以及类型的设置
+  }
+});
+// 添加默认值的情况
+defineComponent<Props & Props2>({
+  props: {
+    msg: {
+      type: String,
+      required: true,
+      default: 'hello'
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    },
+    set: {
+      type: Set,
+      required: true
+    }
+  },
+  setup(props = {
+    msg: 'hello'
+  }) {
+    // 这种情况下的默认值设置，以及类型的设置
+  }
+});"
+`;
+
+exports[`resolve type > runtime props > with defineComponent not props 1`] = `
+"import { defineComponent, h } from 'vue';
+interface Props {
+  msg: string;
+  optional?: boolean;
+}
+interface Props2 {
+  set: Set<string>;
+}
+defineComponent<Props & Props2>(() => {
+  return () => h('div');
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: true
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    },
+    set: {
+      type: Set,
+      required: true
+    }
+  }
+});"
+`;
+
+exports[`resolve type > runtime props > with defineComponent props 1`] = `
+"import { defineComponent, h } from 'vue';
+interface Props {
+  msg: string;
+  optional?: boolean;
+}
+interface Props2 {
+  set: Set<string>;
+}
+defineComponent<Props & Props2>(props => {
+  return () => h('div', props.msg);
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: true
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    },
+    set: {
+      type: Set,
+      required: true
+    }
+  }
+});"
+`;
+
+exports[`resolve type > runtime props > with defineComponent props default 1`] = `
+"import { defineComponent, h, _mergeDefaults } from 'vue';
+interface Props {
+  msg: string;
+  optional?: boolean;
+}
+interface Props2 {
+  set: Set<string>;
+}
+defineComponent<Props & Props2>((props = {
+  msg: '11'
+}) => {
+  return () => h('div', props.msg);
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: true,
+      default: '11'
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    },
+    set: {
+      type: Set,
+      required: true
+    }
+  }
+});
+const a = {
+  msg: '11'
+};
+defineComponent<Props>((props = a) => {
+  return () => h('div', props.msg);
+}, {
+  props: /*@__PURE__*/_mergeDefaults({
+    msg: {
+      type: String,
+      required: true
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    }
+  }, a)
+});
+const b = {
+  msg: '12'
+};
+defineComponent<Props>((props = b) => {
+  return () => h('div', props.msg);
+}, {
+  props: /*@__PURE__*/_mergeDefaults({
+    msg: {
+      type: String,
+      required: true
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    }
+  }, b)
 });"
 `;
 

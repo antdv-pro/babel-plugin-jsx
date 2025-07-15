@@ -38,12 +38,12 @@ importers:
       '@types/node':
         specifier: ^22.13.14
         version: 22.13.14
+      '@v-c/babel-plugin-jsx':
+        specifier: workspace:*
+        version: link:packages/babel-plugin-jsx
       '@vitest/coverage-v8':
         specifier: ^3.1.1
         version: 3.1.1(vitest@3.1.1(@types/node@22.13.14)(jiti@2.4.2)(jsdom@26.0.0)(terser@5.39.0)(yaml@2.7.1))
-      '@vue/babel-plugin-jsx':
-        specifier: workspace:*
-        version: link:packages/babel-plugin-jsx
       bumpp:
         specifier: ^10.1.0
         version: 10.1.0(magicast@0.3.5)
@@ -103,10 +103,10 @@ importers:
       '@babel/types':
         specifier: ^7.27.0
         version: 7.27.0
-      '@vue/babel-helper-vue-transform-on':
+      '@v-c/babel-helper-vue-transform-on':
         specifier: workspace:*
         version: link:../babel-helper-vue-transform-on
-      '@vue/babel-plugin-resolve-type':
+      '@v-c/babel-plugin-resolve-type':
         specifier: workspace:*
         version: link:../babel-plugin-resolve-type
       '@vue/shared':
@@ -168,7 +168,7 @@ importers:
       '@babel/standalone':
         specifier: ^7.27.0
         version: 7.27.0
-      '@vue/babel-plugin-jsx':
+      '@v-c/babel-plugin-jsx':
         specifier: workspace:*
         version: link:../babel-plugin-jsx
       assert:

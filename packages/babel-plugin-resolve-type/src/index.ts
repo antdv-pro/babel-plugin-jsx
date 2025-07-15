@@ -29,7 +29,7 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
         isCE: false,
         error(msg, node) {
           throw new Error(
-            `[@vue/babel-plugin-resolve-type] ${msg}\n\n${filename}\n${codeFrameColumns(
+            `[@v-c/babel-plugin-resolve-type] ${msg}\n\n${filename}\n${codeFrameColumns(
               file.code,
               {
                 start: {
@@ -61,7 +61,7 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
       CallExpression(path) {
         if (!ctx) {
           throw new Error(
-            '[@vue/babel-plugin-resolve-type] context is not loaded.'
+            '[@v-c/babel-plugin-resolve-type] context is not loaded.'
           );
         }
 
@@ -69,8 +69,48 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
 
         if (!t.isIdentifier(node.callee, { name: 'defineComponent' })) return;
         if (!checkDefineComponent(path)) return;
-
         const comp = node.arguments[0];
+        let defaultPropsTypeDecl: any | undefined;
+        let defaultEmitTypeDecl: any | undefined;
+        // 如果类型写在了函数参数上的情况下
+        if (node.typeParameters && node.typeParameters.params.length > 0) {
+          defaultPropsTypeDecl = node.typeParameters.params[0];
+          defaultEmitTypeDecl = node.typeParameters.params[1];
+        }
+        // 如果不是函数的情况下，判断是不是一个对象
+        if (!t.isFunction(comp) && t.isObjectExpression(comp)) {
+          // 这种情况下，就不是获取第二个参数了，所以默认情况下就不支持这种模式吧
+          defaultEmitTypeDecl = undefined;
+          // 判断是否存在了props，如果存在了就不要处理了
+          const checkProps = comp.properties.some(
+            (p) =>
+              t.isObjectProperty(p) &&
+              p.key.type === 'Identifier' &&
+              p.key.name === 'props'
+          );
+          // 检查是否存在emits
+          const checkEmits = comp.properties.some(
+            (p) =>
+              t.isObjectProperty(p) &&
+              p.key.type === 'Identifier' &&
+              p.key.name === 'emits'
+          );
+
+          // 获取setup的函数
+          const setupFn = comp.properties.find(
+            (p) =>
+              t.isObjectMethod(p) && t.isIdentifier(p.key, { name: 'setup' })
+          );
+          if (setupFn && t.isFunction(setupFn)) {
+            if (!checkProps) {
+              processProps(setupFn, comp, defaultPropsTypeDecl);
+            }
+            if (!checkEmits) {
+              processEmits(setupFn, comp, defaultEmitTypeDecl);
+            }
+          }
+          return;
+        }
         if (!comp || !t.isFunction(comp)) return;
 
         let options = node.arguments[1];
@@ -78,9 +118,10 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
           options = t.objectExpression([]);
           node.arguments.push(options);
         }
-
-        node.arguments[1] = processProps(comp, options) || options;
-        node.arguments[1] = processEmits(comp, node.arguments[1]) || options;
+        node.arguments[1] =
+          processProps(comp, options, defaultPropsTypeDecl) || options;
+        node.arguments[1] =
+          processEmits(comp, node.arguments[1], defaultEmitTypeDecl) || options;
       },
       VariableDeclarator(path) {
         inferComponentName(path);
@@ -121,16 +162,19 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
     options:
       | BabelCore.types.ArgumentPlaceholder
       | BabelCore.types.SpreadElement
-      | BabelCore.types.Expression
+      | BabelCore.types.Expression,
+    defaultTypeDecl?: any
   ) {
     const props = comp.params[0];
-    if (!props) return;
-
-    if (props.type === 'AssignmentPattern') {
-      ctx!.propsTypeDecl = getTypeAnnotation(props.left);
+    if (!props) {
+      if (defaultTypeDecl) {
+        ctx!.propsTypeDecl = defaultTypeDecl;
+      }
+    }else if (props.type === 'AssignmentPattern') {
+      ctx!.propsTypeDecl = getTypeAnnotation(props.left) ?? defaultTypeDecl;
       ctx!.propsRuntimeDefaults = props.right;
     } else {
-      ctx!.propsTypeDecl = getTypeAnnotation(props);
+      ctx!.propsTypeDecl = getTypeAnnotation(props) ?? defaultTypeDecl;
     }
 
     if (!ctx!.propsTypeDecl) return;
@@ -148,24 +192,13 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
     );
   }
 
-  function processEmits(
-    comp: BabelCore.types.Function,
+  function addEmit(
     options:
       | BabelCore.types.ArgumentPlaceholder
       | BabelCore.types.SpreadElement
-      | BabelCore.types.Expression
+      | BabelCore.types.Expression,
+    emitType: any
   ) {
-    const setupCtx = comp.params[1] && getTypeAnnotation(comp.params[1]);
-    if (
-      !setupCtx ||
-      !t.isTSTypeReference(setupCtx) ||
-      !t.isIdentifier(setupCtx.typeName, { name: 'SetupContext' })
-    )
-      return;
-
-    const emitType = setupCtx.typeParameters?.params[0];
-    if (!emitType) return;
-
     ctx!.emitsTypeDecl = emitType;
     const runtimeEmits = extractRuntimeEmits(ctx!);
 
@@ -177,6 +210,32 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
       options,
       t.objectProperty(t.identifier('emits'), ast)
     );
+  }
+
+  function processEmits(
+    comp: BabelCore.types.Function,
+    options:
+      | BabelCore.types.ArgumentPlaceholder
+      | BabelCore.types.SpreadElement
+      | BabelCore.types.Expression,
+    defaultEmitTypeDecl?: any
+  ) {
+    const setupCtx = comp.params[1] && getTypeAnnotation(comp.params[1]);
+    if (
+      !setupCtx ||
+      !t.isTSTypeReference(setupCtx) ||
+      !t.isIdentifier(setupCtx.typeName, { name: 'SetupContext' })
+    ) {
+      if (defaultEmitTypeDecl) {
+        return addEmit(options, defaultEmitTypeDecl);
+      }
+      return;
+    }
+
+    const emitType = setupCtx.typeParameters?.params[0];
+    if (!emitType) return;
+
+    return addEmit(options, emitType);
   }
 });
 

@@ -1,5 +1,5 @@
 import { createApp, defineComponent, reactive } from 'vue';
-import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx';
+import { type VueJSXPluginOptions } from '@v-c/babel-plugin-jsx';
 
 export { VueJSXPluginOptions };
 

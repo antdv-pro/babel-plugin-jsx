@@ -5,7 +5,7 @@ import _template from '@babel/template';
 import _syntaxJsx from '@babel/plugin-syntax-jsx';
 import { addNamed, addNamespace, isModule } from '@babel/helper-module-imports';
 import { type NodePath, type Visitor } from '@babel/traverse';
-import ResolveType from '@vue/babel-plugin-resolve-type';
+import ResolveType from '@v-c/babel-plugin-resolve-type';
 import { declare } from '@babel/helper-plugin-utils';
 import transformVueJSX from './transform-vue-jsx';
 import sugarFragment from './sugar-fragment';
@@ -96,7 +96,7 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
                 });
                 const { enableObjectSlots = true } = state.opts;
                 if (enableObjectSlots) {
-                  state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
+                  state.set('@v-c/babel-plugin-jsx/runtimeIsSlot', () => {
                     if (importMap.runtimeIsSlot) {
                       return importMap.runtimeIsSlot;
                     }
@@ -137,7 +137,7 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
 
                 const { enableObjectSlots = true } = state.opts;
                 if (enableObjectSlots) {
-                  state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
+                  state.set('@v-c/babel-plugin-jsx/runtimeIsSlot', () => {
                     if (helpers.runtimeIsSlot) {
                       return helpers.runtimeIsSlot;
                     }
