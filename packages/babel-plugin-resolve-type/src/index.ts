@@ -170,7 +170,7 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
       if (defaultTypeDecl) {
         ctx!.propsTypeDecl = defaultTypeDecl;
       }
-    }else if (props.type === 'AssignmentPattern') {
+    } else if (props.type === 'AssignmentPattern') {
       ctx!.propsTypeDecl = getTypeAnnotation(props.left) ?? defaultTypeDecl;
       ctx!.propsRuntimeDefaults = props.right;
     } else {
