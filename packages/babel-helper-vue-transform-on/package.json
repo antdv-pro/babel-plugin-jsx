@@ -7,6 +7,9 @@
   "license": "MIT",
   "main": "index.js",
   "types": "index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuejs/babel-plugin-jsx.git"
